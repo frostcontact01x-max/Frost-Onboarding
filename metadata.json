@@ -1,0 +1,6 @@
+{
+  "name": "Frost Media - Strategic Discovery",
+  "description": "Institutional web application for Frost Media Strategic Discovery onboarding sequence.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
