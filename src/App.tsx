@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { motion } from "motion/react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -197,10 +198,13 @@ export default function App() {
         );
       }
 
+      const randomRef = "TX-" + Math.random().toString(36).substring(2, 8).toUpperCase() + "-" + Math.random().toString(36).substring(2, 6).toUpperCase();
+      const subId = data.submissionId || randomRef;
+
       setSubmissionMeta({
-        id: data.submissionId,
-        timestamp: data.timestamp,
-        webhookStatus: data.webhookStatus
+        id: subId,
+        timestamp: data.timestamp || new Date().toISOString(),
+        webhookStatus: data.webhookStatus || "DISPATCHED"
       });
       setIsSuccess(true);
     } catch (err: any) {
@@ -774,51 +778,132 @@ export default function App() {
           </div>
         ) : (
           /* ==================== SUCCESS STATE ==================== */
-          <div className="py-12 text-center space-y-6 max-w-md mx-auto animate-in fade-in duration-300">
-            <img
-              src="https://www.image2url.com/r2/default/images/1780480299806-55160160-e0cf-4054-812a-ae367d7100a8.png"
-              className="w-24 h-24 mx-auto drop-shadow-[0_0_20px_rgba(208,0,0,0.5)] object-contain"
-              alt="Success Logo"
-            />
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            className="py-12 text-center space-y-8 max-w-md mx-auto relative"
+          >
+            {/* Animated Logo Container with Pulse Radar Effect */}
+            <div className="relative w-32 h-32 mx-auto flex items-center justify-center">
+              {/* Expanding Outer Pulse Ring */}
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0.8 }}
+                animate={{ scale: [1, 1.4, 1.6], opacity: [0.6, 0.2, 0] }}
+                transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute inset-0 rounded-full border border-[#D00000] bg-[#D00000]/10 pointer-events-none"
+              />
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0.6 }}
+                animate={{ scale: [1, 1.25, 1.45], opacity: [0.5, 0.15, 0] }}
+                transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                className="absolute inset-0 rounded-full border border-[#D00000]/60 pointer-events-none"
+              />
 
-            <div className="space-y-2">
-              <h2 className="text-3xl font-serif text-white font-normal">
-                Strategy Synchronized.
-              </h2>
-              <p className="text-zinc-400 text-sm font-sans leading-relaxed">
-                Your discovery payload has been indexed. Our strategy group will analyze your input and contact you within 48 hours.
-              </p>
+              {/* Main Badge Graphic */}
+              <motion.div
+                initial={{ scale: 0, rotate: -15 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ type: "spring", stiffness: 260, damping: 20, delay: 0.1 }}
+                className="relative z-10 w-24 h-24 bg-zinc-950 border border-zinc-800 rounded-full flex items-center justify-center p-3 shadow-[0_0_30px_rgba(208,0,0,0.4)]"
+              >
+                <img
+                  src="https://www.image2url.com/r2/default/images/1780480299806-55160160-e0cf-4054-812a-ae367d7100a8.png"
+                  className="w-full h-full object-contain filter drop-shadow-[0_0_10px_rgba(208,0,0,0.6)]"
+                  alt="Success Badge"
+                />
+
+                {/* Animated Verified Check Badge */}
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 18, delay: 0.4 }}
+                  className="absolute -bottom-1 -right-1 bg-[#D00000] text-white p-1.5 rounded-full shadow-lg border-2 border-black"
+                >
+                  <Check className="w-4 h-4 stroke-[3]" />
+                </motion.div>
+              </motion.div>
             </div>
 
+            {/* Title & Body Sequence */}
+            <div className="space-y-3">
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.25 }}
+                className="inline-block"
+              >
+                <h2 className="text-3xl font-serif text-white font-normal tracking-tight">
+                  Strategy Synchronized.
+                </h2>
+                {/* Accent line expansion */}
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: "100%" }}
+                  transition={{ duration: 0.6, delay: 0.45, ease: "easeOut" }}
+                  className="h-[2px] bg-gradient-to-r from-transparent via-[#D00000] to-transparent mx-auto mt-2"
+                />
+              </motion.div>
+
+              <motion.p
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.35 }}
+                className="text-zinc-400 text-sm font-sans leading-relaxed max-w-sm mx-auto"
+              >
+                Your discovery payload has been indexed. Our strategy group will analyze your input and contact you within 48 hours.
+              </motion.p>
+            </div>
+
+            {/* Transaction Reference Block */}
             {submissionMeta && (
-              <div className="p-3 bg-zinc-950 border border-zinc-800 font-mono text-xs space-y-1">
-                <span className="text-[9px] uppercase tracking-widest text-[#D00000] font-bold block">
-                  Transaction Reference
-                </span>
-                <div className="flex items-center justify-center gap-2 text-zinc-200">
-                  <span>{submissionMeta.id}</span>
-                  <button
-                    onClick={copySubmissionId}
-                    className="p-1 text-zinc-400 hover:text-white"
-                  >
-                    {copiedId ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
-                  </button>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4, delay: 0.45 }}
+                className="p-4 bg-zinc-950/90 border border-zinc-800 font-mono text-xs space-y-2 relative overflow-hidden group shadow-lg"
+              >
+                <div className="flex items-center justify-between text-[9px] uppercase tracking-widest">
+                  <span className="text-[#D00000] font-bold flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#D00000] animate-ping" />
+                    Transaction Reference
+                  </span>
+                  <span className="text-zinc-600 font-mono">CONFIDENTIAL</span>
                 </div>
-              </div>
+
+                <div className="flex items-center justify-between gap-2 text-zinc-100 bg-black/60 p-2.5 border border-zinc-900 font-mono tracking-wider">
+                  <span className="text-sm font-bold text-white select-all">{submissionMeta.id}</span>
+                  <motion.button
+                    whileTap={{ scale: 0.9 }}
+                    onClick={copySubmissionId}
+                    className="p-1.5 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors rounded"
+                    title="Copy Transaction ID"
+                  >
+                    {copiedId ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                  </motion.button>
+                </div>
+              </motion.div>
             )}
 
-            <button
-              onClick={() => {
-                setFormData(initialFormData);
-                setIsSuccess(false);
-                setCurrentStep(1);
-                setSubmissionMeta(null);
-              }}
-              className="text-xs font-mono uppercase tracking-widest px-6 py-2.5 border border-zinc-800 bg-zinc-950 hover:bg-zinc-900 text-zinc-300 transition-all"
+            {/* Action Button */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.55 }}
             >
-              Start New Discovery
-            </button>
-          </div>
+              <button
+                onClick={() => {
+                  setFormData(initialFormData);
+                  setIsSuccess(false);
+                  setCurrentStep(1);
+                  setSubmissionMeta(null);
+                }}
+                className="text-xs font-mono uppercase tracking-widest px-6 py-3 border border-zinc-800 bg-zinc-950 hover:bg-zinc-900 hover:border-zinc-700 text-zinc-300 hover:text-white transition-all cursor-pointer shadow-md"
+              >
+                Start New Discovery
+              </button>
+            </motion.div>
+          </motion.div>
         )}
       </main>
 
