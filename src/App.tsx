@@ -148,7 +148,9 @@ export default function App() {
 
   const handleNext = () => {
     if (validateStep(currentStep)) {
-      if (currentStep < 4) setCurrentStep((prev) => prev + 1);
+      if (currentStep < 4) {
+        setCurrentStep((prev) => prev + 1);
+      }
     }
   };
 
@@ -160,9 +162,13 @@ export default function App() {
     e.preventDefault();
     setSubmitError(null);
 
-    // If not on the final step, advance to next step (e.g., if user presses Enter in an input field)
+    // Strictly restrict submission execution to step 4
     if (currentStep < 4) {
       handleNext();
+      return;
+    }
+
+    if (currentStep !== 4) {
       return;
     }
 
