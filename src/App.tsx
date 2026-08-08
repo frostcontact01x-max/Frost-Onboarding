@@ -160,6 +160,12 @@ export default function App() {
     e.preventDefault();
     setSubmitError(null);
 
+    // If not on the final step, advance to next step (e.g., if user presses Enter in an input field)
+    if (currentStep < 4) {
+      handleNext();
+      return;
+    }
+
     if (!validateStep(1)) {
       setCurrentStep(1);
       return;
