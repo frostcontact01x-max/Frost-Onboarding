@@ -7,7 +7,6 @@ import {
   Loader2,
   Copy,
   Check,
-  Sliders,
   ChevronRight
 } from "lucide-react";
 
@@ -30,9 +29,6 @@ interface FormDataState {
   tone: string[];
   avoidWords: string;
   formats: string[];
-  approver: string;
-  review_method: string;
-  milestones: string;
   webhookUrl: string;
 }
 
@@ -55,17 +51,13 @@ const initialFormData: FormDataState = {
   tone: [],
   avoidWords: "",
   formats: [],
-  approver: "",
-  review_method: "",
-  milestones: "",
   webhookUrl: ""
 };
 
 const STEPS = [
   { id: 1, name: "Identity & Goals", sub: "Contact & Core Authority" },
   { id: 2, name: "Channels & Workflow", sub: "Active Platforms & Hours" },
-  { id: 3, name: "Audience & Voice", sub: "Target Persona & Tone" },
-  { id: 4, name: "Logistics & Commit", sub: "Approval & Bridge Delivery" }
+  { id: 3, name: "Audience & Voice", sub: "Target Persona & Tone" }
 ];
 
 export default function App() {
@@ -85,7 +77,6 @@ export default function App() {
 
   // Extra features
   const [copiedId, setCopiedId] = useState(false);
-  const [showWebhookConfig, setShowWebhookConfig] = useState(false);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -149,7 +140,7 @@ export default function App() {
 
   const handleNext = () => {
     if (validateStep(currentStep)) {
-      if (currentStep < 4) {
+      if (currentStep < 3) {
         setCurrentStep((prev) => prev + 1);
       }
     }
@@ -163,13 +154,13 @@ export default function App() {
     e.preventDefault();
     setSubmitError(null);
 
-    // Strictly restrict submission execution to step 4
-    if (currentStep < 4) {
+    // Strictly restrict submission execution to step 3
+    if (currentStep < 3) {
       handleNext();
       return;
     }
 
-    if (currentStep !== 4) {
+    if (currentStep !== 3) {
       return;
     }
 
@@ -258,7 +249,7 @@ export default function App() {
           <div className="space-y-8">
             {/* Minimal Step Indicator Pills */}
             <div className="space-y-2">
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-3 gap-2">
                 {STEPS.map((step) => {
                   const isActive = step.id === currentStep;
                   const isDone = step.id < currentStep;
@@ -298,7 +289,7 @@ export default function App() {
               <div className="w-full bg-zinc-900 h-[2px]">
                 <div
                   className="progress-fill"
-                  style={{ width: `${(currentStep / 4) * 100}%` }}
+                  style={{ width: `${(currentStep / 3) * 100}%` }}
                 ></div>
               </div>
             </div>
@@ -307,7 +298,7 @@ export default function App() {
             <div className="border-b border-zinc-800 pb-4">
               <div className="flex justify-between items-baseline mb-1">
                 <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#D00000]">
-                  Phase 0{currentStep} of 04
+                  Phase 0{currentStep} of 03
                 </span>
                 <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">
                   {STEPS[currentStep - 1].sub}
@@ -620,107 +611,6 @@ export default function App() {
                 </div>
               )}
 
-              {/* ==================== STEP 4: LOGISTICS & COMMIT ==================== */}
-              {currentStep === 4 && (
-                <div className="space-y-6 animate-in fade-in duration-200">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <label className="text-[10px] font-mono font-bold uppercase tracking-widest text-zinc-400 block">
-                        Approval Authority
-                      </label>
-                      <input
-                        type="text"
-                        name="approver"
-                        value={formData.approver}
-                        onChange={handleInputChange}
-                        placeholder="Who approves final assets?"
-                      />
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="text-[10px] font-mono font-bold uppercase tracking-widest text-zinc-400 block">
-                        Upcoming Milestones
-                      </label>
-                      <input
-                        type="text"
-                        name="milestones"
-                        value={formData.milestones}
-                        onChange={handleInputChange}
-                        placeholder="Key launches or event dates"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-mono font-bold uppercase tracking-widest text-zinc-400 block">
-                      Review Protocol
-                    </label>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                      {["Email", "WhatsApp", "Shared doc", "Weekly call"].map((method) => (
-                        <label
-                          key={method}
-                          className="flex items-center gap-2.5 p-2.5 border border-zinc-800 bg-zinc-950 hover:border-zinc-700 text-xs font-mono uppercase tracking-wider text-zinc-300 transition-colors"
-                        >
-                          <input
-                            type="radio"
-                            name="review_method"
-                            value={method}
-                            checked={formData.review_method === method}
-                            onChange={handleInputChange}
-                          />
-                          <span>{method}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Webhook Configuration toggle */}
-                  <div className="pt-2">
-                    <button
-                      type="button"
-                      onClick={() => setShowWebhookConfig(!showWebhookConfig)}
-                      className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 hover:text-white flex items-center gap-1.5"
-                    >
-                      <Sliders className="w-3 h-3 text-[#D00000]" />
-                      <span>{showWebhookConfig ? "Hide Webhook URL" : "Custom Webhook Endpoint"}</span>
-                    </button>
-                    {showWebhookConfig && (
-                      <div className="mt-2 p-3 border border-zinc-800 bg-zinc-950 space-y-1">
-                        <input
-                          type="url"
-                          name="webhookUrl"
-                          value={formData.webhookUrl}
-                          onChange={handleInputChange}
-                          placeholder="https://your-webhook-endpoint.com/receive"
-                          className="text-xs"
-                        />
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Concise Summary Payload Audit */}
-                  <div className="border border-zinc-800 bg-zinc-950 p-4 space-y-2 font-mono text-xs">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-[#D00000] block mb-2">
-                      Payload Audit Summary
-                    </span>
-                    <div className="grid grid-cols-2 gap-2 text-zinc-300 text-[11px]">
-                      <div>
-                        <span className="text-zinc-500 block">Principal:</span>
-                        {formData.principalName || "—"} ({formData.organization || "—"})
-                      </div>
-                      <div>
-                        <span className="text-zinc-500 block">Contact:</span>
-                        {formData.email || "—"} &bull; {formData.phone || "—"}
-                      </div>
-                      <div className="col-span-2">
-                        <span className="text-zinc-500 block">Authority Goal:</span>
-                        <p className="text-zinc-400 font-sans truncate">{formData.reputationGoals || "—"}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
               {/* Error Alert */}
               {submitError && (
                 <div className="p-3 border border-[#D00000] bg-red-950/30 text-white flex items-center gap-3 font-mono text-xs">
@@ -745,7 +635,7 @@ export default function App() {
                   <div></div>
                 )}
 
-                {currentStep < 4 ? (
+                {currentStep < 3 ? (
                   <button
                     type="button"
                     onClick={handleNext}
